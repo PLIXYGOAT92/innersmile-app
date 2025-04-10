@@ -1,12 +1,78 @@
-# React + Vite
+# InnerSmile
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Une application de chat sécurisée pour les étudiants, offrant un espace d'échange anonyme sur différents sujets liés à la vie étudiante.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 💬 Chat en temps réel avec d'autres étudiants
+- 🎯 6 catégories de discussion :
+  - Examens et stress
+  - Isolement
+  - Harcèlement
+  - Relations
+  - Famille
+  - Bien-être
+- 🔒 Anonymat garanti
+- 🤖 Réponses contextuelles générées par IA
+- 📱 Interface mobile-first
+- 🎨 Design moderne et intuitif
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Cloner le dépôt :
+```bash
+git clone https://github.com/votre-username/innersmile-app.git
+cd innersmile-app
+```
+
+2. Installer les dépendances :
+```bash
+yarn install
+```
+
+3. Créer un fichier `.env` à partir de `.env.example` :
+```bash
+cp .env.example .env
+```
+
+4. Remplir les variables d'environnement dans `.env`
+
+5. Lancer l'application en mode développement :
+```bash
+yarn dev
+```
+
+## Technologies utilisées
+
+- React
+- Vite
+- Ant Design
+- Styled Components
+- React Router
+
+## Structure du projet
+
+```
+innersmile-app/
+├── src/
+│   ├── components/     # Composants réutilisables
+│   ├── config/         # Configuration (catégories, etc.)
+│   ├── pages/          # Pages de l'application
+│   ├── services/       # Services (API, messages, etc.)
+│   └── styles/         # Styles globaux
+├── public/             # Fichiers statiques
+└── package.json        # Dépendances et scripts
+```
+
+## Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
+
+## Licence
+
+MIT
