@@ -1,5 +1,7 @@
 import { getCategoryById } from '../config/categories';
 
+const HUGGINGFACE_API_KEY = import.meta.env.VITE_HUGGINGFACE_API_KEY;
+
 const STUDENT_PERSONAS = {
   1: {
     name: 'Emma',
