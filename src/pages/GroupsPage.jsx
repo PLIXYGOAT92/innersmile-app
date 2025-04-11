@@ -89,7 +89,7 @@ const GroupsPage = () => {
         </Header>
 
         <GroupsGrid>
-          {categories.map(category => (
+          {Object.values(categories).map(category => (
             <GroupCard
               key={category.id}
               onClick={() => handleGroupClick(category.id)}
@@ -98,12 +98,9 @@ const GroupsPage = () => {
               <GroupHeader>
                 <Avatar 
                   size="large" 
-                  style={{ 
-                    backgroundColor: category.color,
-                    color: 'white'
-                  }}
+                  style={{ backgroundColor: category.color }}
                 >
-                  {category.title[0]}
+                  {category.title.charAt(0)}
                 </Avatar>
                 <GroupTitle level={4} color={category.color}>
                   {category.title}

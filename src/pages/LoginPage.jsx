@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Typography, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Typography, message, Switch } from 'antd';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { validateSchoolCode } from '../services/schoolCodeService';
+import { validateAdminCode } from '../services/adminCodeService';
 import MobileLayout from '../components/MobileLayout';
 
 const { Title, Text } = Typography;
@@ -18,35 +18,46 @@ const LoginContainer = styled.div`
   background-color: #f5f5f5;
 `;
 
-const StyledCard = styled(Card)`
-  width: 100%;
-  max-width: 400px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background: white;
-  padding: 20px;
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 24px;
 `;
 
 const StyledTitle = styled(Title)`
-  text-align: center;
-  margin-bottom: 24px !important;
   color: #722ed1 !important;
+  margin-bottom: 8px !important;
 `;
 
-const StyledForm = styled(Form)`
-  .ant-form-item {
-    margin-bottom: 16px;
-  }
+const StyledDescription = styled(Text)`
+  color: #666;
+  font-size: 16px;
+`;
 
-  .ant-input-affix-wrapper {
-    border-radius: 10px;
-    padding: 8px 11px;
-  }
+const LoginForm = styled(Form)`
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
 
-  .ant-btn {
-    height: 40px;
-    border-radius: 10px;
-    font-weight: 500;
+const AdminSwitch = styled.div`
+  margin-bottom: 24px;
+  text-align: center;
+`;
+
+const LoginButton = styled(Button)`
+  background-color: #722ed1;
+  border-color: #722ed1;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #531dab;
+    border-color: #531dab;
   }
 `;
 
@@ -54,79 +65,107 @@ const LoginPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const onFinish = async (values) => {
-    setLoading(true);
+  const generateRandomUsername = () => {
+    const adjectives = ['Cool', 'Super', 'Gentil', 'Sympa', 'Drôle', 'Calme', 'Doux', 'Vif', 'Rapide', 'Lent'];
+    const nouns = ['Chat', 'Chien', 'Lion', 'Tigre', 'Ours', 'Loup', 'Renard', 'Aigle', 'Dauphin', 'Panda'];
+    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    const randomNumber = Math.floor(Math.random() * 1000);
+    return `${randomAdjective}${randomNoun}${randomNumber}`;
+  };
+
+  useEffect(() => {
+    const randomUsername = generateRandomUsername();
+    setUsername(randomUsername);
+    form.setFieldsValue({ username: randomUsername });
+  }, []);
+
+  const handleSubmit = async (values) => {
     try {
-      const validationResult = await validateSchoolCode(values.schoolCode);
-      if (validationResult.isValid) {
-        sessionStorage.setItem('schoolCode', values.schoolCode);
-        sessionStorage.setItem('username', values.username);
-        message.success('Connexion réussie !');
-        navigate('/groups');
+      if (isAdmin) {
+        const validationResult = validateAdminCode(values.schoolCode, values.adminCode);
+        if (validationResult.isValid) {
+          sessionStorage.setItem('isAdmin', 'true');
+          sessionStorage.setItem('schoolCode', values.schoolCode);
+          sessionStorage.setItem('username', values.username);
+          navigate('/admin');
+        } else {
+          message.error(validationResult.message);
+        }
       } else {
-        message.error(validationResult.message);
+        const validationResult = validateSchoolCode(values.schoolCode);
+        if (validationResult.isValid) {
+          sessionStorage.setItem('schoolCode', values.schoolCode);
+          sessionStorage.setItem('username', values.username);
+          navigate('/groups');
+        } else {
+          message.error(validationResult.message);
+        }
       }
     } catch (error) {
-      message.error('Une erreur est survenue lors de la connexion');
-    } finally {
-      setLoading(false);
+      message.error('Une erreur est survenue');
     }
   };
 
   return (
     <MobileLayout>
       <LoginContainer>
-        <StyledCard>
+        <Header>
           <StyledTitle level={2}>InnerSmile</StyledTitle>
-          <StyledForm
-            form={form}
-            name="login"
-            onFinish={onFinish}
-            layout="vertical"
+          <StyledDescription>
+            Connectez-vous pour accéder à la plateforme
+          </StyledDescription>
+        </Header>
+
+        <LoginForm
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+        >
+          <AdminSwitch>
+            <Switch
+              checked={isAdmin}
+              onChange={setIsAdmin}
+              checkedChildren="Admin"
+              unCheckedChildren="Élève"
+            />
+          </AdminSwitch>
+
+          <Form.Item
+            name="schoolCode"
+            label="Code école"
+            rules={[{ required: true, message: 'Veuillez entrer le code école' }]}
           >
-            <Form.Item
-              name="schoolCode"
-              rules={[
-                { required: true, message: 'Veuillez entrer le code de l\'école' },
-                { pattern: /^[A-Za-z0-9]+$/, message: 'Le code doit contenir uniquement des lettres et des chiffres' }
-              ]}
-            >
-              <Input
-                prefix={<LockOutlined />}
-                placeholder="Code de l'école"
-                size="large"
-              />
-            </Form.Item>
+            <Input placeholder="Entrez le code école" />
+          </Form.Item>
 
+          {isAdmin && (
             <Form.Item
-              name="username"
-              rules={[
-                { required: true, message: 'Veuillez entrer votre nom d\'utilisateur' },
-                { min: 3, message: 'Le nom d\'utilisateur doit contenir au moins 3 caractères' }
-              ]}
+              name="adminCode"
+              label="Code administrateur"
+              rules={[{ required: true, message: 'Veuillez entrer le code administrateur' }]}
             >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Nom d'utilisateur"
-                size="large"
-              />
+              <Input.Password placeholder="Entrez le code administrateur" />
             </Form.Item>
+          )}
 
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                size="large"
-                block
-                loading={loading}
-                style={{ backgroundColor: '#722ed1', borderColor: '#722ed1' }}
-              >
-                Se connecter
-              </Button>
-            </Form.Item>
-          </StyledForm>
-        </StyledCard>
+          <Form.Item
+            name="username"
+            label={isAdmin ? "Nom d'utilisateur admin" : "Nom d'utilisateur"}
+            rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur' }]}
+          >
+            <Input placeholder={isAdmin ? "Nom d'utilisateur admin" : "Votre nom d'utilisateur"} />
+          </Form.Item>
+
+          <Form.Item>
+            <LoginButton type="primary" htmlType="submit" block>
+              {isAdmin ? 'Connexion Admin' : 'Connexion'}
+            </LoginButton>
+          </Form.Item>
+        </LoginForm>
       </LoginContainer>
     </MobileLayout>
   );
