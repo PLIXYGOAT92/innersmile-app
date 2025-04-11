@@ -1,4 +1,4 @@
-import { initialSchoolCodes } from '../config/schoolCodes';
+import { schoolCodes } from '../config/schoolCodes';
 
 const SCHOOL_CODES_STORAGE_KEY = 'schoolCodes';
 
@@ -6,9 +6,9 @@ export const getSchoolCodes = () => {
   const storedCodes = sessionStorage.getItem(SCHOOL_CODES_STORAGE_KEY);
   if (!storedCodes) {
     // Initialize with default school codes if none exist
-    sessionStorage.setItem(SCHOOL_CODES_STORAGE_KEY, JSON.stringify(initialSchoolCodes));
-    console.log('Initialized school codes:', initialSchoolCodes);
-    return initialSchoolCodes;
+    sessionStorage.setItem(SCHOOL_CODES_STORAGE_KEY, JSON.stringify(schoolCodes));
+    console.log('Initialized school codes:', schoolCodes);
+    return schoolCodes;
   }
   
   const codes = JSON.parse(storedCodes);
@@ -22,16 +22,16 @@ export const validateSchoolCode = (code) => {
   
   if (!schoolCodes[code]) {
     console.log('School code not found');
-    return { valid: false, message: "Code d'établissement invalide" };
+    return { isValid: false, message: "Code d'établissement invalide" };
   }
   
   if (!schoolCodes[code].active) {
     console.log('School code is inactive');
-    return { valid: false, message: "Ce code d'établissement n'est plus actif" };
+    return { isValid: false, message: "Ce code d'établissement n'est plus actif" };
   }
   
   console.log('School code is valid');
-  return { valid: true, schoolName: schoolCodes[code].name };
+  return { isValid: true, schoolName: schoolCodes[code].name };
 };
 
 export const addSchoolCode = (code, data) => {

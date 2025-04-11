@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Typography, Button, Table, Space } from 'antd';
+import { Card, Typography, Button, Space } from 'antd';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import MobileLayout from '../components/MobileLayout';

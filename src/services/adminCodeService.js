@@ -2,23 +2,16 @@ import { schoolCodes } from '../config/schoolCodes';
 
 const ADMIN_CODES_STORAGE_KEY = 'admin_codes';
 
-// Format du code admin : [code_école]_[mot_de_passe_complexe]
-// Exemple : "1234_AdminComplex2024!"
+// Codes admin prédéfinis pour chaque école
+const ADMIN_CODES = {
+  '1234': '1234_AdminComplex2024!',
+  '5678': '5678_SecureAdmin2024!',
+  '9012': '9012_AdminAccess2024!'
+};
 
 const getAdminCodes = () => {
-  let adminCodes = sessionStorage.getItem(ADMIN_CODES_STORAGE_KEY);
-  if (!adminCodes) {
-    // Initialiser avec des codes admin pour chaque école
-    const initialAdminCodes = {};
-    Object.keys(schoolCodes).forEach(schoolCode => {
-      // Générer un code admin complexe pour chaque école
-      const complexPart = generateComplexCode();
-      initialAdminCodes[schoolCode] = `${schoolCode}_${complexPart}`;
-    });
-    sessionStorage.setItem(ADMIN_CODES_STORAGE_KEY, JSON.stringify(initialAdminCodes));
-    return initialAdminCodes;
-  }
-  return JSON.parse(adminCodes);
+  // Toujours retourner les codes prédéfinis
+  return ADMIN_CODES;
 };
 
 const generateComplexCode = () => {
@@ -50,23 +43,26 @@ const generateComplexCode = () => {
 };
 
 const validateAdminCode = (schoolCode, adminCode) => {
-  const adminCodes = getAdminCodes();
-  const expectedCode = adminCodes[schoolCode];
-  
-  if (!expectedCode) {
+  console.log('Validation attempt:', {
+    schoolCode,
+    adminCode,
+    expectedCode: ADMIN_CODES[schoolCode]
+  });
+
+  if (!ADMIN_CODES[schoolCode]) {
     return {
       isValid: false,
       message: 'Code école invalide'
     };
   }
-  
-  if (adminCode !== expectedCode) {
+
+  if (adminCode !== ADMIN_CODES[schoolCode]) {
     return {
       isValid: false,
       message: 'Code administrateur incorrect'
     };
   }
-  
+
   return {
     isValid: true,
     message: 'Code administrateur valide'

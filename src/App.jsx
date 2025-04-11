@@ -7,6 +7,9 @@ import GroupsPage from './pages/GroupsPage';
 import ChatPage from './pages/ChatPage';
 import HelpPage from './pages/HelpPage';
 import AdminPage from './pages/AdminPage';
+import UsersPage from './pages/admin/UsersPage';
+import MessagesPage from './pages/admin/MessagesPage';
+import SchoolsPage from './pages/admin/SchoolsPage';
 import HelpButton from './components/HelpButton';
 
 const App = () => {
@@ -27,6 +30,9 @@ const App = () => {
           <Route path="/chat/:groupId" element={<ChatPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/users" element={<UsersPage />} />
+          <Route path="/admin/messages" element={<MessagesPage />} />
+          <Route path="/admin/schools" element={<SchoolsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <HelpButton />

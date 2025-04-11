@@ -61,12 +61,28 @@ const LoginButton = styled(Button)`
   }
 `;
 
+const UsernameDisplay = styled.div`
+  padding: 8px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  font-size: 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #722ed1;
+  font-weight: 500;
+`;
+
 const LoginPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [schoolCode, setSchoolCode] = useState('');
+  const [adminCode, setAdminCode] = useState('');
 
   const generateRandomUsername = () => {
     const adjectives = ['Cool', 'Super', 'Gentil', 'Sympa', 'Drôle', 'Calme', 'Doux', 'Vif', 'Rapide', 'Lent'];
@@ -86,27 +102,29 @@ const LoginPage = () => {
   const handleSubmit = async (values) => {
     try {
       if (isAdmin) {
-        const validationResult = validateAdminCode(values.schoolCode, values.adminCode);
-        if (validationResult.isValid) {
-          sessionStorage.setItem('isAdmin', 'true');
-          sessionStorage.setItem('schoolCode', values.schoolCode);
-          sessionStorage.setItem('username', values.username);
-          navigate('/admin');
-        } else {
-          message.error(validationResult.message);
+        const validation = validateAdminCode(values.schoolCode, values.adminCode);
+        if (!validation.isValid) {
+          message.error(validation.message);
+          return;
         }
+        sessionStorage.setItem('isAdmin', 'true');
+        sessionStorage.setItem('schoolCode', values.schoolCode);
+        sessionStorage.setItem('username', username);
+        navigate('/admin');
       } else {
-        const validationResult = validateSchoolCode(values.schoolCode);
-        if (validationResult.isValid) {
-          sessionStorage.setItem('schoolCode', values.schoolCode);
-          sessionStorage.setItem('username', values.username);
-          navigate('/groups');
-        } else {
-          message.error(validationResult.message);
+        const validation = validateSchoolCode(values.schoolCode);
+        if (!validation.isValid) {
+          message.error(validation.message);
+          return;
         }
+        sessionStorage.removeItem('isAdmin');
+        sessionStorage.setItem('schoolCode', values.schoolCode);
+        sessionStorage.setItem('username', username);
+        navigate('/groups');
       }
     } catch (error) {
-      message.error('Une erreur est survenue');
+      message.error('Une erreur est survenue lors de la connexion');
+      console.error('Login error:', error);
     }
   };
 
@@ -152,12 +170,10 @@ const LoginPage = () => {
             </Form.Item>
           )}
 
-          <Form.Item
-            name="username"
-            label={isAdmin ? "Nom d'utilisateur admin" : "Nom d'utilisateur"}
-            rules={[{ required: true, message: 'Veuillez entrer votre nom d\'utilisateur' }]}
-          >
-            <Input placeholder={isAdmin ? "Nom d'utilisateur admin" : "Votre nom d'utilisateur"} />
+          <Form.Item label="Votre pseudo">
+            <UsernameDisplay>
+              {username}
+            </UsernameDisplay>
           </Form.Item>
 
           <Form.Item>
